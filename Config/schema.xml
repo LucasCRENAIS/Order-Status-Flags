@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database defaultIdMethod="native" name="TheliaMain"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="../../../vendor/thelia/propel/resources/xsd/database.xsd" >
+    <!--
+    See propel documentation on http://propelorm.org for all information about schema file
+    -->
+
+  <table name="flags" namespace="OrderStatusFlags\Model">
+    <column autoIncrement="true" name="id" primaryKey="true" required="true" type="INTEGER" />
+    <column name="code" size="255" required="true" type="VARCHAR" />
+    <column name="color" size="7" type="CHAR" />
+    <column name="title" size="255" type="VARCHAR" />
+    <column name="description" type="CLOB" />
+    <column name="chapo" type="LONGVARCHAR" />
+    <column name="postscriptum" type="LONGVARCHAR" />
+    <column name="protected_status" defaultValue="1" required="true" type="TINYINT" />
+    <column name="position" defaultValue="0" required="true" type="INTEGER" />
+    <behavior name="timestampable" />
+    <behavior name="i18n">
+      <parameter name="i18n_columns" value="title, description, chapo, postscriptum" />
+    </behavior>
+  </table>
+
+  <table name="order_status_flags" namespace="OrderStatusFlags\Model">
+    <column autoIncrement="true" name="id" primaryKey="true" required="true" type="INTEGER" />
+    <column name="order_status_id" foreignKey="true" required="true" type="INTEGER" />
+    <column name="flag_id" foreignKey="true" required="true" type="INTEGER" />
+    <column name="title" size="255" type="VARCHAR" />
+    <column name="description" type="CLOB" />
+    <column name="chapo" type="LONGVARCHAR" />
+    <column name="postscriptum" type="LONGVARCHAR" />
+    <foreign-key foreignTable="order_status" name="fk_order_status" onDelete="CASCADE" onUpdate="RESTRICT">
+      <reference foreign="id" local="order_status_id" />
+    </foreign-key>
+    <foreign-key foreignTable="flags" name="fk_flag" onDelete="CASCADE" onUpdate="RESTRICT">
+      <reference foreign="id" local="flag_id" />
+    </foreign-key>
+    <behavior name="timestampable" />
+    <behavior name="i18n">
+      <parameter name="i18n_columns" value="title, description, chapo, postscriptum" />
+    </behavior>
+  </table>
+
+  <external-schema filename="local/config/schema.xml" referenceOnly="true" />
+</database>

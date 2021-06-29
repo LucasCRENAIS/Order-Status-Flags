@@ -1,0 +1,30 @@
+{javascripts file='assets/js/bootstrap-editable/bootstrap-editable.js'}
+    <script src="{$asset_url}"></script>
+{/javascripts}
+
+<script>
+
+    $(".order-status-flags-cancel").click(function(){
+        $("#cancel_order-status-flags_id").val($(this).attr("data-id"));
+    });
+
+    $('.flagsPositionChange').editable({
+        type        : 'text',
+        title       : '{intl l="Enter new flag position"}',
+        mode        : 'popup',
+        inputclass  : 'input-mini',
+        placement   : 'left',
+        success     : function(response, newValue) {
+            // The URL template
+            var url = "{url noamp='1' path='admin/configuration/order-status/update-flags-position' flags_id='__ID__' position='__POS__'}";
+
+            // Perform subtitutions
+            url = url.replace('__ID__', $(this).data('id'))
+                    .replace('__POS__', newValue);
+            console.log($(this).data('flags_id'), newValue)
+            // Reload the page
+            location.href = url;
+        }
+    });
+
+</script>

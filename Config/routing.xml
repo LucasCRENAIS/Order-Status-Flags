@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<routes xmlns="http://symfony.com/schema/routing"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
+
+    <!--
+    if a /admin/module/orderstatusflags/ route is provided, a "Configuration" button will be displayed
+    for the module in the module list. Clicking this button will invoke this route.
+    -->
+
+  <route id="admin.order-status-flags.update-position" path="/admin/configuration/order-status/update-flags-position">
+    <default key="_controller">OrderStatusFlags\Controller\OrderStatusFlagsController::CreateUpdatePositionEvent</default>
+  </route>
+  <route id="admin.order-status-flags.update-flags" path="/admin/configuration/order-status/update-flags/{flags_id}">
+    <default key="_controller">OrderStatusFlags\Controller\OrderStatusFlagsController::editFlag</default>
+    <requirement key="flags_id">\d+</requirement>
+  </route>
+  <route id="admin.order-status-flags.create-flags" path="/admin/configuration/order-status/create-flags">
+    <default key="_controller">OrderStatusFlags\Controller\OrderStatusFlagsController::createFlag</default>
+  </route>
+  <route id="admin.order-status-flags.delete-flags" path="/admin/configuration/order-status/delete-flags">
+    <default key="_controller">OrderStatusFlags\Controller\OrderStatusFlagsController::deleteFlag</default>
+  </route>
+</routes>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<config xmlns="http://thelia.net/schema/dic/config"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://thelia.net/schema/dic/config http://thelia.net/schema/dic/config/thelia-1.0.xsd">
+
+    <loops>
+        <loop name="order-status-flags-loop" class="OrderStatusFlags\Loop\OrderStatusFlagsLoop" />
+        <loop name="flags-edit-loop" class="OrderStatusFlags\Loop\FlagsEditLoop" />
+    </loops>
+
+    <forms>
+      <form name="order-status-flags.creation" class="OrderStatusFlags\Form\OrderStatusFlagsCreationForm" />
+      <form name="order-status-flags.modification" class="OrderStatusFlags\Form\OrderStatusFlagsModificationForm" />
+    </forms>
+
+    <commands>
+        <!--
+        <command class="OrderStatusFlags\Command\MySuperCommand" />
+        -->
+    </commands>
+
+
+<!--    <services>-->
+
+<!--    </services>-->
+
+
+    <hooks>
+      <hook id="orderstatusflags.hook" class="OrderStatusFlags\Hook\OrderStatusFlagsHook">
+        <tag name="hook.event_listener" event="order-status.bottom" type="back" method="orderStatusFlagsConfig" />
+        <tag name="hook.event_listener" event="order-status.js" type="back" method="orderStatusFlagsConfigJs" />
+      </hook>
+    </hooks>
+
+    <!--
+    <exports>
+
+    </exports>
+    -->
+
+    <!--
+    <imports>
+
+    </imports>
+    -->
+</config>
