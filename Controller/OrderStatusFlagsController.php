@@ -84,10 +84,8 @@ class OrderStatusFlagsController extends AdminController
         ];
     }
 
-
     public function createFlag(Request $request, Flags $flags)
     {
-
         if (null !== $response = $this->checkAuth([AdminResources::MODULE], ['OrderStatusFlags'], AccessManager::UPDATE)) {
             return $response;
         }
@@ -100,7 +98,7 @@ class OrderStatusFlagsController extends AdminController
             $vform = $this->validateForm($form);
 
             $flags
-                ->setLocale($vform->get('locale')->getData())
+                ->setLocale($this->getSession()->getAdminEditionLang()->getLocale())
                 ->setTitle($vform->get('title')->getData())
                 ->setCode($vform->get('code')->getData())
                 ->setColor($vform->get('color')->getData())
@@ -127,7 +125,8 @@ class OrderStatusFlagsController extends AdminController
             );
         }
 
-        return $this->generateRedirect(URL::getInstance()->absoluteUrl($url, ['tab' => 'config', 'success' => 1]));
+        $lastId = FlagsQuery::create()->orderById(Criteria::DESC)->findOne()->getId();
+        return $this->generateRedirect(URL::getInstance()->absoluteUrl('/admin/configuration/order-status/update-flags/'.$lastId));
     }
 
     /**
@@ -143,8 +142,6 @@ class OrderStatusFlagsController extends AdminController
      */
     public function editFlag(Request $request)
     {
-
-
         $flags = FlagsQuery::create()
             ->filterById($request->attributes->get('flags_id'))
             ->findOne();
@@ -163,21 +160,52 @@ class OrderStatusFlagsController extends AdminController
                 'protected' => $flags->getProtectedStatus()
             ]
         );
-
         $this->getParserContext()->addForm($form);
 
         return $this->render('order-status-flags-edit', $this->getEditionArguments($request));
     }
 
-    /**
-     * Redirect to the edition template.
-     */
-    protected function redirectToEditionTemplate($request)
+    public function saveFlag(Request $request, Flags $flag)
     {
-        return $this->generateRedirectFromRoute(
-            'admin.order-status-flags.update-flags',
-            [],
-            $this->getEditionArguments($request)
-        );
+        $url = '/admin/configuration/order-status/';
+
+        $form = $this->createForm(OrderStatusFlagsCreationForm::getName());
+
+        try {
+            $vform = $this->validateForm($form);
+
+            $flag
+                ->setLocale($this->getSession()->getAdminEditionLang()->getLocale())
+                ->setTitle($vform->get('title')->getData())
+                ->setCode($vform->get('code')->getData())
+                ->setColor($vform->get('color')->getData())
+                ->setChapo($vform->get('chapo')->getData())
+                ->setDescription($vform->get('description')->getData())
+                ->setPostscriptum($vform->get('postscriptum')->getData())
+                ->setProtectedStatus('0');
+
+            if (!$flag->getId()) {
+                $flag->setPosition(
+                    FlagsQuery::create()->orderByPosition(Criteria::DESC)->findOne()->getPosition() + 1
+                );
+            }
+
+            $flag->save();
+
+            // Redirect to the success URL,
+//            if ('stay' !== $request->get('save_mode')) {
+//                $url = '/admin/configuration/order-status';
+//            }
+//
+        } catch (\Exception $e) {
+            $this->setupFormErrorContext(
+                Translator::getInstance()->trans('flag created'),
+                $message = $e->getMessage(),
+                $form,
+                $e
+            );
+        }
+
+        $this->generateRedirect($url);
     }
 }

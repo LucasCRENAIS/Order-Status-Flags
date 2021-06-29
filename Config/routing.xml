@@ -16,10 +16,15 @@
     <default key="_controller">OrderStatusFlags\Controller\OrderStatusFlagsController::editFlag</default>
     <requirement key="flags_id">\d+</requirement>
   </route>
+  <route id="admin.order-status-flags.save-flags" path="/admin/configuration/order-status/save-flags/{flags_id}">
+    <default key="_controller">OrderStatusFlags\Controller\OrderStatusFlagsController::saveFlag</default>
+    <requirement key="flags_id">\d+</requirement>
+  </route>
   <route id="admin.order-status-flags.create-flags" path="/admin/configuration/order-status/create-flags">
     <default key="_controller">OrderStatusFlags\Controller\OrderStatusFlagsController::createFlag</default>
   </route>
-  <route id="admin.order-status-flags.delete-flags" path="/admin/configuration/order-status/delete-flags">
+  <route id="admin.order-status-flags.delete-flags" path="/admin/configuration/order-status/delete-flags/{flags_id}">
     <default key="_controller">OrderStatusFlags\Controller\OrderStatusFlagsController::deleteFlag</default>
+  <requirement key="flags_id">\d+</requirement>
   </route>
 </routes>

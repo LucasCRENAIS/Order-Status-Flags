@@ -32,7 +32,7 @@ class OrderStatusFlagsModificationForm extends OrderStatusFlagsCreationForm
         $this->addStandardDescFields();
     }
 
-    public static function getName()
+    public static function getName() : string
     {
         return 'flags_modification';
     }

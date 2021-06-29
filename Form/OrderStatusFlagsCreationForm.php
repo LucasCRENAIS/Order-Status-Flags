@@ -92,7 +92,7 @@ class OrderStatusFlagsCreationForm extends BaseForm
         $this->addStandardDescFields(['title', 'description', 'chapo', 'postscriptum']);
     }
 
-    public static function getName()
+    public static function getName() : string
     {
         return 'flags_creation';
     }
