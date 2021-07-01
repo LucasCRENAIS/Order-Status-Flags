@@ -13,6 +13,8 @@ use OrderStatusFlags\Model\Base\OrderStatusFlagsQuery as BaseOrderStatusFlagsQue
  * application requirements.  This class will only be generated as
  * long as it does not already exist in the output directory.
  */
+
+
 class OrderStatusFlagsQuery extends BaseOrderStatusFlagsQuery
 {
 

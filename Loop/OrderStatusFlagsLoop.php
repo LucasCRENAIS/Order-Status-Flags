@@ -107,9 +107,9 @@ class OrderStatusFlagsLoop extends BaseI18nLoop implements PropelSearchLoopInter
                 foreach ($flags->getOrderStatusFlagss() as $orderStatusFlag)
             {
                $orderStatusIds[] = $orderStatusFlag->getOrderStatusId();
-            }
 
-            $loopResultRow->set('ID', $flags->getId())
+            }
+                $loopResultRow->set('ID', $flags->getId())
 
                 ->set('LOCALE', $this->locale)
                 ->set('CODE', $flags->getCode())
@@ -118,6 +118,12 @@ class OrderStatusFlagsLoop extends BaseI18nLoop implements PropelSearchLoopInter
                 ->set('PROTECTED_STATUS', $flags->getProtectedStatus())
                 ->set('ORDER_STATUS_IDS', $orderStatusIds)
                 ->set('TITLE', $flags->getVirtualColumn('i18n_TITLE'));
+
+                $linkedStatus = [
+                    $flags->getId() => $orderStatusIds
+                ];
+
+                $loopResultRow->set('LINKED_STATUS', $linkedStatus);
 
             $this->addOutputFields($loopResultRow, $flags);
 

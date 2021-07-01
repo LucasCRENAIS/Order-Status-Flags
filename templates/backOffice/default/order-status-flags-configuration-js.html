@@ -21,7 +21,6 @@
             // Perform subtitutions
             url = url.replace('__ID__', $(this).data('id'))
                     .replace('__POS__', newValue);
-            console.log($(this).data('flags_id'), newValue)
             // Reload the page
             location.href = url;
         }

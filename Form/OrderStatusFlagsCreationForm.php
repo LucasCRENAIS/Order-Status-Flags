@@ -13,7 +13,10 @@
 namespace OrderStatusFlags\Form;
 
 use OrderStatusFlags\Model\FlagsQuery;
+use OrderStatusFlags\Model\OrderStatusFlagsQuery;
 use Propel\Runtime\ActiveQuery\Criteria;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -86,6 +89,20 @@ class OrderStatusFlagsCreationForm extends BaseForm
                     'attr' => [
                         'placeholder' => Translator::getInstance()->trans('#000000'),
                     ],
+                ]
+            )
+            ->add(
+                'associated_status',
+                ChoiceType::class,
+                [
+                    'multiple' => true,
+                    'expanded' => true,
+                    'label' => Translator::getInstance()->trans('Associated order status'),
+                    'label_attr' => [
+                        'for' => 'title',
+                        'help' => Translator::getInstance()->trans('order status associated with this flag'),
+                    ],
+                    'required' => false,
                 ]
             );
 

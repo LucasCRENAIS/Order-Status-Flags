@@ -87,34 +87,35 @@
                                         url_parameter="flags_id"
                                         in_place_edit_class="flagsPositionChange"
                                         position=$POSITION
-                                        flags_id=$ID
+                                        id=$ID
                                         }
                                     </td>
 
-                                    <td class="actions">
+                                        <td class="actions">
                                             {$buttons = [
-                                            [
-                                            'type' => 'edit',
-                                            'title' => {intl l='Edit this flag'},
-                                            'href' => {url path="/admin/configuration/order-status/update-flags/%id" id=$ID},
-                                            'auth' => ['resource' => 'admin.order-status']
-                                            ]
+                                                [
+                                                    'type' => 'edit',
+                                                    'title' => {intl l='Edit this flag'},
+                                                    'href' => {url path="/admin/configuration/order-status/update-flags/%id" id=$ID},
+                                                    'auth' => ['resource' => 'admin.order-status']
+                                                ]
                                             ]}
                                             {if !$DELETABLE|default:null}
                                                 {$buttons[] = [
-                                                'type' => 'delete',
-                                                'class' => 'order-status-flags-cancel',
-                                                'title' => {intl l='Delete this flag'},
-                                                'href' => '#cancel_order-status-flags_dialog',
-                                                'data' => [
-                                                'id' => $ID,
-                                                'toggle' => 'modal'
-                                                ],
-                                                'auth' => ['resource' => 'admin.order-status']
+                                                    'type' => 'delete',
+                                                    'class' => 'order-status-flags-cancel',
+                                                    'title' => {intl l='Delete this flag'},
+                                                    'href' => '#cancel_order-status-flags_dialog',
+                                                    'data' => [
+                                                        'id' => $ID,
+                                                        'toggle' => 'modal'
+                                                    ],
+                                                    'auth' => ['resource' => 'admin.order-status']
                                                 ]}
                                             {/if}
                                             {include file='renderer/buttons.html' buttons=$buttons}
-                                    </td>
+                                        </td>
+
                                 </tr>
 
                             {/loop}
@@ -188,7 +189,7 @@
     {* Cancel order confirmation dialog *}
 
     {capture "cancel_order_status_flags_dialog"}
-        <input type="hidden" name="order_status_flags_id" id="cancel_order-status_flags_id" />
+        <input type="hidden" name="order_status_flags_id" id="cancel_order-status-flags_id" />
     {/capture}
 
     {include
@@ -198,9 +199,9 @@
     dialog_title    = {intl l="Delete an order status"}
     dialog_message  = {intl l="Do you really want to delete this flag ?"}
 
-    form_action         = {token_url path='/admin/configuration/order-status-flags/delete'}
-    form_content        = {$smarty.capture.cancel_order_status_dialog nofilter}
-    form_id             = "cancel-order-status-form"
+    form_action         = {token_url path='/admin/configuration/order-status/delete-flags'}
+    form_content        = {$smarty.capture.cancel_order_status_flags_dialog nofilter}
+    form_id             = "cancel-order-status-flags-form"
     }
 
 {/block}
