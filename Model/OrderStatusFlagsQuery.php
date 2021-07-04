@@ -3,6 +3,7 @@
 namespace OrderStatusFlags\Model;
 
 use OrderStatusFlags\Model\Base\OrderStatusFlagsQuery as BaseOrderStatusFlagsQuery;
+use Thelia\Model\OrderStatusQuery;
 
 /**
  * Skeleton subclass for performing query and update operations on the 'order_status_flags' table.
@@ -17,5 +18,14 @@ use OrderStatusFlags\Model\Base\OrderStatusFlagsQuery as BaseOrderStatusFlagsQue
 
 class OrderStatusFlagsQuery extends BaseOrderStatusFlagsQuery
 {
-
+    public static function getList()
+    {
+        $orderStatusFlagsList = [];
+        $orderStatus = OrderStatusQuery::create()->find();
+        foreach ($orderStatus  as $status)
+        {
+            $orderStatusFlagsList[$status->getCode()] = $status->getId();
+        }
+        return $orderStatusFlagsList;
+    }
 }

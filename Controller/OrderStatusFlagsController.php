@@ -8,23 +8,18 @@ use OrderStatusFlags\Form\OrderStatusFlagsCreationForm;
 use OrderStatusFlags\Form\OrderStatusFlagsModificationForm;
 use OrderStatusFlags\Model\Flags;
 use OrderStatusFlags\Model\FlagsQuery;
+use OrderStatusFlags\Model\OrderStatusFlags;
 use OrderStatusFlags\Model\OrderStatusFlagsQuery;
-use OrderStatusFlags\OrderStatusFlags;
 use Propel\Runtime\ActiveQuery\Criteria;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Thelia\Controller\Admin\AdminController;
-use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\Event\UpdatePositionEvent;
 use Thelia\Core\HttpFoundation\Request;
-use Thelia\Core\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Thelia\Core\Security\AccessManager;
 use Thelia\Core\Security\Resource\AdminResources;
 use Thelia\Core\Translation\Translator;
-use Thelia\Form\Definition\AdminForm;
 use Thelia\Model\OrderStatusQuery;
 use Thelia\Tools\URL;
 
@@ -49,7 +44,6 @@ class OrderStatusFlagsController extends AdminController
     {
         $flags = FlagsQuery::create()
             ->findOneById($request->attributes->get('flags_id'));
-
         return $flags;
     }
 
@@ -192,7 +186,63 @@ class OrderStatusFlagsController extends AdminController
                 );
             }
 
-            $flags->save();
+        $flags->save();
+
+        $ids = OrderStatusQuery::create()->find()->getData();
+
+        $orderStatusIds = [];
+        foreach ($ids as $id)
+        {
+            $orderStatusIds [] = $id->getId();
+        }
+            if ($vform->get('associated_status')->getData() == null) {
+
+                foreach ($orderStatusIds as $lineToDelete)
+                {
+                    $lineToDelete =
+                        OrderStatusFlagsQuery::create()
+                            ->filterByFlagId($vform->get('id')->getData())
+                            ->filterByOrderStatusId($lineToDelete);
+                    $lineToDelete->delete();
+                }
+
+            }else{
+                $unCheckedOnes = array_diff($orderStatusIds, $vform->get('associated_status')->getData());
+                $checkedOnes = $vform->get('associated_status')->getData();
+
+                foreach ($checkedOnes as $lineToAdd)
+                {
+                     $isInDb =  OrderStatusFlagsQuery::create()
+                            ->filterByFlagId($vform->get('id')->getData())
+                            ->filterByOrderStatusId($lineToAdd)
+                            ->find()
+                            ->getData();
+
+                    foreach ($isInDb as $v)
+                    {
+                        $v->setOrderStatusId($lineToAdd)
+                            ->setFlagId($vform->get('id')->getData())
+                            ->save();
+                    }
+
+                    if (empty($isInDb))
+                    {
+                        $orderStatusFlags = new OrderStatusFlags();
+                        $orderStatusFlags
+                            ->setOrderStatusId($lineToAdd)
+                            ->setFlagId($vform->get('id')->getData())
+                            ->save();
+                    }
+                }
+                foreach ($unCheckedOnes as $lineToDelete)
+                {
+                    $lineToDelete =
+                        OrderStatusFlagsQuery::create()
+                            ->filterByFlagId($vform->get('id')->getData())
+                            ->filterByOrderStatusId($lineToDelete);
+                    $lineToDelete->delete();
+                }
+            }
 
 //             Redirect to the success URL,
             if ('stay' !== $request->get('save_mode')) {
@@ -212,7 +262,7 @@ class OrderStatusFlagsController extends AdminController
         $flagsToDelete = FlagsQuery::create()
             ->findOneById($request->request->get('order_status_flags_id'));
 
-        if ($flagsToDelete->getProtectedStatus() !== 0)
+        if (!$flagsToDelete->getProtectedStatus())
         {
             $flagsToDelete->delete();
         }

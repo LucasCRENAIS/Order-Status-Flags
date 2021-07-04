@@ -86,7 +86,7 @@
 
                                                     <input type="hidden" name="current_tab" value="general"/>
 
-                                                    {* Be sure to get the currency ID, even if the form could not be validated *}
+                                                    {* Be sure to get the current ID, even if the form could not be validated *}
                                                     <input type="hidden" name="id" value="{$ID}" />
                                                     {form_hidden_fields}
 
@@ -114,24 +114,54 @@
                                                                         </div>
                                                                     {/custom_render_form_field}
                                                                 </div>
-                                                                <div class="col-md-5">
-                                                                    {loop type="order-status-flags-loop" name="order-status" flag_id=$orderStatusIds}
-                                                                        {if $LINKED_STATUS[$id] !== null}
-                                                                            {assign var='linkedIds' value=$LINKED_STATUS[$id]}
-                                                                        {/if}
-                                                                    {/loop}
 
-                                                                    {custom_render_form_field field="associated_status"}
-                                                                    {loop type="order-status" name="order-status" flag_id=$orderStatusIds}
-                                                                            <div class="checkbox">
-                                                                                <input type="checkbox" class="" style="width: 18px;" value="{$ID}" name="status" {form_field_attributes field="associated_status"}
-                                                                                        {if $ID|in_array:$linkedIds}checked{/if}>
-                                                                                <a class="label" style="background-color: {$COLOR};" href="{url path="/admin/configuration/order-status/update/%id" id=$ID}">
-                                                                                {$TITLE}
-                                                                                </a>
-                                                                            </div>
+                                                                <div class="col-md-5">
+
+                                                                    {form_field field="associated_status"}
+                                                                        <label for="title" class="control-label">{$label}</label>
+
+                                                                        {loop type="order-status-flags-loop" name="order-status" flag_id=$orderStatusIds}
+                                                                            {if $LINKED_STATUS[$id] !== null}
+                                                                                {assign var='linkedIds' value=$LINKED_STATUS[$id]}
+                                                                            {/if}
                                                                         {/loop}
-                                                                    {/custom_render_form_field}
+
+
+{*                                                                        <select {$attributes nofilter}>*}
+
+{*                                                                                <option value="{$choice->value}" {if (is_array($value) && in_array($choice->value, $value)) || $choice->value == $value}selected="selected"{/if}>{$choice->label}</option>*}
+
+{*                                                                        </select>*}
+                                                                    {$tmp=[]}
+                                                                    {loop name='order-status' type='order-status'}
+                                                                        {$tmp[$ID]=[$TITLE,$COLOR]}
+                                                                    {/loop}
+                                                                    {foreach $choices as $choice}
+                                                                        <div class="checkbox">
+                                                                            <input  type="checkbox" class="" value="{$choice->value}" {if $choice->value|in_array:$linkedIds}checked{/if} {if $PROTECTED_STATUS}disabled{/if} style="width: 20px;" {form_field_attributes field="associated_status"}>
+                                                                            <a class="label" style="background-color: {$tmp[$choice->value][1]}" href="{url path="/admin/configuration/order-status/update/%id" id={$choice->value}}">
+                                                                                {$tmp[$choice->value][0]}
+                                                                            </a>
+                                                                        </div>
+                                                                    {/foreach}
+
+{*                                                                        {foreach $choices as $choice}*}
+{*                                                                            <input type="checkbox" value="{$choice->value}" class="form" style="width: 18px;">*}
+{*                                                                        {/foreach}*}
+
+
+{*                                                                        {loop type="order-status" name="order-status" flag_id=$orderStatusIds}*}
+{*                                                                            <div class="checkbox">*}
+{*                                                                                <input type="checkbox" {if {$value} == $ID}checked{/if} class="form" style="width: 18px;" {form_field_attributes field="associated_status"}*}
+{*                                                                                <a class="label" style="background-color: {$COLOR};" href="{url path="/admin/configuration/order-status/update/%id" id=$ID}">*}
+{*                                                                                    {$TITLE}*}
+{*                                                                                </a>*}
+{*                                                                            </div>*}
+{*                                                                        {/loop}*}
+
+                                                                    {/form_field}
+                                                                    <span class="error">{$message|default:null}</span>
+                                                                    <span class="help-block">{$label_attr.help}</span>
                                                                 </div>
                                                             {include file="includes/standard-description-form-fields.html"}
                                                         </div>
@@ -149,7 +179,6 @@
 
                                                     close_url={url path="/admin/configuration/order-status"}
                                                     }
-
                                                     <small>{intl l='Flag created on %date_create. Last modification: %date_change' date_create={format_date date=$CREATE_DATE} date_change={format_date date=$UPDATE_DATE} }</small>
                                                 </form>
                                             {/form}

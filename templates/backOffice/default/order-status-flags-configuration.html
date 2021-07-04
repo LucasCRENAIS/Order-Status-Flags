@@ -71,12 +71,16 @@
                                     <td>
                                         <a href="{url path="/admin/orders" status={', '|implode:$ORDER_STATUS_IDS}}">
                                             {assign var='orderStatusIds' value=','|implode:$ORDER_STATUS_IDS}
-                                            {count type="order" name="order" customer="*" backend_context="1" status=$orderStatusIds}
+                                            {if $orderStatusIds}
+                                                {count type="order" name="order" customer="*" backend_context="1" status=$orderStatusIds}
+                                            {/if}
                                         </a>
                                     </td>
                                     <td>
                                         {loop type="order_status" name="order-status" flag_id=$orderStatusIds}
-                                            <a class="label" style="background-color: {$COLOR};" href="{url path="/admin/configuration/order-status/update/%id" id=$ID}">{$TITLE}</a>
+                                            {if $orderStatusIds}
+                                                <a class="label" style="background-color: {$COLOR};" href="{url path="/admin/configuration/order-status/update/%id" id=$ID}">{$TITLE}</a>
+                                            {/if}
                                         {/loop}
                                     </td>
                                     <td>

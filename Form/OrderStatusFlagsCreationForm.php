@@ -95,6 +95,7 @@ class OrderStatusFlagsCreationForm extends BaseForm
                 'associated_status',
                 ChoiceType::class,
                 [
+                    'choices' => OrderStatusFlagsQuery::getList(),
                     'multiple' => true,
                     'expanded' => true,
                     'label' => Translator::getInstance()->trans('Associated order status'),
