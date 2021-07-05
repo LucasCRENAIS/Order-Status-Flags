@@ -100,16 +100,14 @@ class OrderStatusFlagsLoop extends BaseI18nLoop implements PropelSearchLoopInter
     public function parseResults(LoopResult $loopResult)
     {
         /** @var Flags $flags */
-            foreach ($loopResult->getResultDataCollection() as $flags) {
+        foreach ($loopResult->getResultDataCollection() as $flags) {
             $loopResultRow = new LoopResultRow($flags);
             $orderStatusIds = [];
             /** @var OrderStatusFlags $orderStatusFlag */
-                foreach ($flags->getOrderStatusFlagss() as $orderStatusFlag)
-            {
-               $orderStatusIds[] = $orderStatusFlag->getOrderStatusId();
-
+            foreach ($flags->getOrderStatusFlagss() as $orderStatusFlag) {
+                $orderStatusIds[] = $orderStatusFlag->getOrderStatusId();
             }
-                $loopResultRow->set('ID', $flags->getId())
+            $loopResultRow->set('ID', $flags->getId())
 
                 ->set('LOCALE', $this->locale)
                 ->set('CODE', $flags->getCode())
@@ -119,11 +117,11 @@ class OrderStatusFlagsLoop extends BaseI18nLoop implements PropelSearchLoopInter
                 ->set('ORDER_STATUS_IDS', $orderStatusIds)
                 ->set('TITLE', $flags->getVirtualColumn('i18n_TITLE'));
 
-                $linkedStatus = [
-                    $flags->getId() => $orderStatusIds
+            $linkedStatus = [
+                    $flags->getId() => $orderStatusIds,
                 ];
 
-                $loopResultRow->set('LINKED_STATUS', $linkedStatus);
+            $loopResultRow->set('LINKED_STATUS', $linkedStatus);
 
             $this->addOutputFields($loopResultRow, $flags);
 

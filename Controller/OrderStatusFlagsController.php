@@ -1,6 +1,5 @@
 <?php
 
-
 namespace OrderStatusFlags\Controller;
 
 use OrderStatusFlags\Event\OrderStatusFlagsEvents;
@@ -17,7 +16,6 @@ use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Thelia\Controller\Admin\AdminController;
 use Thelia\Core\Event\UpdatePositionEvent;
 use Thelia\Core\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
 use Thelia\Core\Security\AccessManager;
 use Thelia\Core\Security\Resource\AdminResources;
 use Thelia\Core\Translation\Translator;
@@ -45,6 +43,7 @@ class OrderStatusFlagsController extends AdminController
     {
         $flags = FlagsQuery::create()
             ->findOneById($request->attributes->get('flags_id'));
+
         return $flags;
     }
 
@@ -57,18 +56,17 @@ class OrderStatusFlagsController extends AdminController
     public function createUpdatePositionEvent(Request $request)
     {
         $mode = UpdatePositionEvent::POSITION_ABSOLUTE;
-        if ($request->query->get('mode') !== null)
-        {
-            $mode = $request->query->get('mode') == 'up'? UpdatePositionEvent::POSITION_UP:UpdatePositionEvent::POSITION_DOWN;
+        if (null !== $request->query->get('mode')) {
+            $mode = 'up' == $request->query->get('mode') ? UpdatePositionEvent::POSITION_UP : UpdatePositionEvent::POSITION_DOWN;
         }
         $event = new UpdatePositionEvent(
-
             $request->query->get('flags_id'),
             $mode,
             $request->query->get('position')
         );
 
         $this->eventDispatcher->dispatch($event, OrderStatusFlagsEvents::ORDER_STATUS_FLAGS_UPDATE_POSITION);
+
         return $this->generateRedirect(URL::getInstance()->absoluteUrl('/admin/configuration/order-status'));
     }
 
@@ -109,7 +107,6 @@ class OrderStatusFlagsController extends AdminController
 
             // Redirect to the success URL,
             if ('stay' !== $request->get('save_mode')) {
-                $url;
             }
         } catch (\Exception $e) {
             $this->setupFormErrorContext(
@@ -121,9 +118,9 @@ class OrderStatusFlagsController extends AdminController
         }
 
         $lastId = FlagsQuery::create()->orderById(Criteria::DESC)->findOne()->getId();
+
         return $this->generateRedirect(URL::getInstance()->absoluteUrl('/admin/configuration/order-status/update-flags/'.$lastId));
     }
-
 
     public function editFlag(Request $request)
     {
@@ -171,11 +168,11 @@ class OrderStatusFlagsController extends AdminController
 
         $form = $this->createForm(OrderStatusFlagsModificationForm::getName());
 
-            $vform = $this->validateForm($form);
+        $vform = $this->validateForm($form);
 
-            $flags = $this->getExistingObject($request);
+        $flags = $this->getExistingObject($request);
 
-            $flags
+        $flags
             ->setLocale($this->getSession()->getAdminEditionLang()->getLocale())
             ->setTitle($vform->get('title')->getData())
             ->setCode($vform->get('code')->getData())
@@ -184,11 +181,11 @@ class OrderStatusFlagsController extends AdminController
             ->setDescription($vform->get('description')->getData())
             ->setPostscriptum($vform->get('postscriptum')->getData());
 
-            if (!$flags->getId()) {
-                $flags->setPosition(
+        if (!$flags->getId()) {
+            $flags->setPosition(
                     FlagsQuery::create()->orderByPosition(Criteria::DESC)->findOne()->getPosition() + 1
                 );
-            }
+        }
 
         $flags->save();
 
@@ -196,68 +193,59 @@ class OrderStatusFlagsController extends AdminController
 
         $orderStatusIds = [];
 
-        foreach ($ids as $id)
-        {
-            $orderStatusIds [] = $id->getId();
+        foreach ($ids as $id) {
+            $orderStatusIds[] = $id->getId();
         }
-            if ($vform->get('associated_status')->getData() == null) {
-
-                foreach ($orderStatusIds as $lineToDelete)
-                {
-                    $lineToDelete =
+        if (null == $vform->get('associated_status')->getData()) {
+            foreach ($orderStatusIds as $lineToDelete) {
+                $lineToDelete =
                         OrderStatusFlagsQuery::create()
                             ->filterByFlagId($vform->get('id')->getData())
                             ->filterByOrderStatusId($lineToDelete);
-                    $lineToDelete->delete();
-                }
+                $lineToDelete->delete();
+            }
+        } else {
+            $unCheckedOnes = array_diff($orderStatusIds, $vform->get('associated_status')->getData());
+            $checkedOnes = $vform->get('associated_status')->getData();
 
-            }else{
-                $unCheckedOnes = array_diff($orderStatusIds, $vform->get('associated_status')->getData());
-                $checkedOnes = $vform->get('associated_status')->getData();
-
-                foreach ($checkedOnes as $lineToAdd)
-                {
-                     $isInDb = OrderStatusFlagsQuery::create()
+            foreach ($checkedOnes as $lineToAdd) {
+                $isInDb = OrderStatusFlagsQuery::create()
                             ->filterByFlagId($vform->get('id')->getData())
                             ->filterByOrderStatusId($lineToAdd)
                             ->find()
                             ->getData();
 
-                    foreach ($isInDb as $v)
-                    {
-                        $v->setOrderStatusId($lineToAdd)
+                foreach ($isInDb as $v) {
+                    $v->setOrderStatusId($lineToAdd)
                             ->setFlagId($vform->get('id')->getData())
                             ->save();
-                    }
+                }
 
-                    if (empty($isInDb))
-                    {
-                        $orderStatusFlags = new OrderStatusFlags();
-                        $orderStatusFlags
+                if (empty($isInDb)) {
+                    $orderStatusFlags = new OrderStatusFlags();
+                    $orderStatusFlags
                             ->setOrderStatusId($lineToAdd)
                             ->setFlagId($vform->get('id')->getData())
                             ->save();
-                    }
-                }
-
-                foreach ($unCheckedOnes as $lineToDelete)
-                {
-                    $lineToDelete =
-                        OrderStatusFlagsQuery::create()
-                            ->filterByFlagId($vform->get('id')->getData())
-                            ->filterByOrderStatusId($lineToDelete);
-                    $lineToDelete->delete();
                 }
             }
 
-            $successMsg = 1;
+            foreach ($unCheckedOnes as $lineToDelete) {
+                $lineToDelete =
+                        OrderStatusFlagsQuery::create()
+                            ->filterByFlagId($vform->get('id')->getData())
+                            ->filterByOrderStatusId($lineToDelete);
+                $lineToDelete->delete();
+            }
+        }
+
+        $successMsg = 1;
 
         return $this->generateRedirect(URL::getInstance()->absoluteUrl($url, ['errorMsg' => $errorMsg, 'successMsg' => $successMsg]));
     }
 
     public function deleteFlag(Request $request)
     {
-
         if (null !== $response = $this->checkAuth([AdminResources::MODULE], ['OrderStatusFlags'], AccessManager::UPDATE)) {
             return $response;
         }
@@ -268,15 +256,14 @@ class OrderStatusFlagsController extends AdminController
         $flagsToDelete = FlagsQuery::create()
             ->findOneById($request->request->get('order_status_flags_id'));
 
-        try  {
+        try {
             $isProtected = $flagsToDelete->getProtectedStatus();
-            if ($isProtected){
+            if ($isProtected) {
                 throw new OrderStatusFlagsException();
             }
             $flagsToDelete->delete();
             $successMsg = 1;
-
-        }catch (OrderStatusFlagsException $exception) {
+        } catch (OrderStatusFlagsException $exception) {
             $errorMsg = 1;
         }
 

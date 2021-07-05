@@ -12,7 +12,6 @@
 
 namespace OrderStatusFlags\Event;
 
-
 class OrderStatusFlagsCreateEvent extends OrderStatusFlagsEvent
 {
 }

@@ -12,7 +12,6 @@
 
 namespace OrderStatusFlags\Event;
 
-
 class OrderStatusFlagsUpdateEvent extends OrderStatusFLagsEvent
 {
     /** @var int */

@@ -1,12 +1,9 @@
 <?php
 
-
 namespace OrderStatusFlags\Loop;
-
 
 use OrderStatusFlags\Model\Flags;
 use OrderStatusFlags\Model\FlagsQuery;
-use OrderStatusFlags\Model\OrderStatusFlags;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Thelia\Core\Template\Element\BaseI18nLoop;
 use Thelia\Core\Template\Element\LoopResult;
@@ -83,7 +80,7 @@ class FlagsEditLoop extends BaseI18nLoop implements PropelSearchLoopInterface
         foreach ($loopResult->getResultDataCollection() as $flag) {
             $loopResultRow = new LoopResultRow($flag);
 
-                $loopResultRow->set('LOCALE', $this->locale)
+            $loopResultRow->set('LOCALE', $this->locale)
                 ->set('ID', $flag->getId())
                 ->set('CODE', $flag->getCode())
                 ->set('COLOR', $flag->getColor())
@@ -100,6 +97,4 @@ class FlagsEditLoop extends BaseI18nLoop implements PropelSearchLoopInterface
 
         return $loopResult;
     }
-
-
 }

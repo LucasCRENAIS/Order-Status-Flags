@@ -12,7 +12,6 @@
 
 namespace OrderStatusFlags\Event;
 
-
 class OrderStatusFlagsDeleteEvent extends OrderStatusFlagsUpdateEvent
 {
 }

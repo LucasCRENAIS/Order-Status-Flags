@@ -12,10 +12,7 @@
 
 namespace OrderStatusFlags\Event;
 
-use OrderStatusFlags\OrderStatusFlags;
 use Thelia\Core\Event\ActionEvent;
-use OrderStatusFlags\Model\Flags;
-
 
 class OrderStatusFlagsEvents extends ActionEvent
 {

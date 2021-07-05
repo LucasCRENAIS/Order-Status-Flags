@@ -17,21 +17,13 @@ use OrderStatusFlags\Event\OrderStatusFlagsDeleteEvent;
 use OrderStatusFlags\Event\OrderStatusFlagsEvents;
 use OrderStatusFlags\Event\OrderStatusFlagsUpdateEvent;
 use OrderStatusFlags\Model\Flags;
+use OrderStatusFlags\Model\FlagsQuery;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Thelia\Action\BaseAction;
-use Thelia\Core\Event\OrderStatus\OrderStatusCreateEvent;
-use Thelia\Core\Event\OrderStatus\OrderStatusDeleteEvent;
-use Thelia\Core\Event\OrderStatus\OrderStatusEvent;
-use Thelia\Core\Event\OrderStatus\OrderStatusUpdateEvent;
-use Thelia\Core\Event\TheliaEvents;
 use Thelia\Core\Event\UpdatePositionEvent;
 use Thelia\Core\Translation\Translator;
-use OrderStatusFlags\Model\OrderStatusFlagsQuery;
-use OrderStatusFlags\Model\OrderStatusFlags as OrderStatusFlagsModel;
-use OrderStatusFlags\Model\FlagsQuery;
-use Thelia\Model\OrderStatusQuery;
 
 class OrderStatusFlagsAction extends BaseAction implements EventSubscriberInterface
 {

@@ -12,7 +12,6 @@
 
 namespace OrderStatusFlags\Hook;
 
-use OrderStatusFlags\Exception\OrderStatusFlagsException;
 use OrderStatusFlags\OrderStatusFlags;
 use Thelia\Core\Event\Hook\HookRenderEvent;
 use Thelia\Core\Hook\BaseHook;
@@ -23,13 +22,11 @@ class OrderStatusFlagsHook extends BaseHook
 {
     public function orderStatusFlagsConfig(HookRenderEvent $event)
     {
-
         if (null !== $params = ModuleConfigQuery::create()->findByModuleId(OrderStatusFlags::getModuleId())) {
-
-                /** @var ModuleConfig $param */
-                foreach ($params as $param) {
-                    $vars[$param->getName()] = $param->getValue();
-                }
+            /** @var ModuleConfig $param */
+            foreach ($params as $param) {
+                $vars[$param->getName()] = $param->getValue();
+            }
 
             $event->add(
                 $this->render(

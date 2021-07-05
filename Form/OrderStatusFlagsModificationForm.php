@@ -17,7 +17,6 @@ use Symfony\Component\Validator\Constraints\GreaterThan;
 
 class OrderStatusFlagsModificationForm extends OrderStatusFlagsCreationForm
 {
-
     protected function buildForm(): void
     {
         $this->formBuilder->add('id', HiddenType::class, [
@@ -32,7 +31,7 @@ class OrderStatusFlagsModificationForm extends OrderStatusFlagsCreationForm
         $this->addStandardDescFields();
     }
 
-    public static function getName() : string
+    public static function getName(): string
     {
         return 'flags_modification';
     }

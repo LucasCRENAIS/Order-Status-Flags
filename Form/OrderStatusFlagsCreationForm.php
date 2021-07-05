@@ -15,7 +15,6 @@ namespace OrderStatusFlags\Form;
 use OrderStatusFlags\Model\FlagsQuery;
 use OrderStatusFlags\Model\OrderStatusFlagsQuery;
 use Propel\Runtime\ActiveQuery\Criteria;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Validator\Constraints\Callback;
@@ -110,7 +109,7 @@ class OrderStatusFlagsCreationForm extends BaseForm
         $this->addStandardDescFields(['title', 'description', 'chapo', 'postscriptum']);
     }
 
-    public static function getName() : string
+    public static function getName(): string
     {
         return 'flags_creation';
     }
