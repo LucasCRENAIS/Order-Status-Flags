@@ -4,6 +4,7 @@
 namespace OrderStatusFlags\Controller;
 
 use OrderStatusFlags\Event\OrderStatusFlagsEvents;
+use OrderStatusFlags\Exception\OrderStatusFlagsException;
 use OrderStatusFlags\Form\OrderStatusFlagsCreationForm;
 use OrderStatusFlags\Form\OrderStatusFlagsModificationForm;
 use OrderStatusFlags\Model\Flags;
@@ -108,7 +109,7 @@ class OrderStatusFlagsController extends AdminController
 
             // Redirect to the success URL,
             if ('stay' !== $request->get('save_mode')) {
-                $url = '/admin/configuration/order-status';
+                $url;
             }
         } catch (\Exception $e) {
             $this->setupFormErrorContext(
@@ -165,6 +166,9 @@ class OrderStatusFlagsController extends AdminController
 
         $url = '/admin/configuration/order-status';
 
+        $successMsg = null;
+        $errorMsg = null;
+
         $form = $this->createForm(OrderStatusFlagsModificationForm::getName());
 
             $vform = $this->validateForm($form);
@@ -191,6 +195,7 @@ class OrderStatusFlagsController extends AdminController
         $ids = OrderStatusQuery::create()->find()->getData();
 
         $orderStatusIds = [];
+
         foreach ($ids as $id)
         {
             $orderStatusIds [] = $id->getId();
@@ -212,7 +217,7 @@ class OrderStatusFlagsController extends AdminController
 
                 foreach ($checkedOnes as $lineToAdd)
                 {
-                     $isInDb =  OrderStatusFlagsQuery::create()
+                     $isInDb = OrderStatusFlagsQuery::create()
                             ->filterByFlagId($vform->get('id')->getData())
                             ->filterByOrderStatusId($lineToAdd)
                             ->find()
@@ -234,6 +239,7 @@ class OrderStatusFlagsController extends AdminController
                             ->save();
                     }
                 }
+
                 foreach ($unCheckedOnes as $lineToDelete)
                 {
                     $lineToDelete =
@@ -244,12 +250,9 @@ class OrderStatusFlagsController extends AdminController
                 }
             }
 
-//             Redirect to the success URL,
-            if ('stay' !== $request->get('save_mode')) {
-                $url = '/admin/configuration/order-status';
-            }
+            $successMsg = 1;
 
-        return $this->generateRedirect($url);
+        return $this->generateRedirect(URL::getInstance()->absoluteUrl($url, ['errorMsg' => $errorMsg, 'successMsg' => $successMsg]));
     }
 
     public function deleteFlag(Request $request)
@@ -259,17 +262,24 @@ class OrderStatusFlagsController extends AdminController
             return $response;
         }
 
+        $successMsg = null;
+        $errorMsg = null;
+
         $flagsToDelete = FlagsQuery::create()
             ->findOneById($request->request->get('order_status_flags_id'));
 
-        if (!$flagsToDelete->getProtectedStatus())
-        {
+        try  {
+            $isProtected = $flagsToDelete->getProtectedStatus();
+            if ($isProtected){
+                throw new OrderStatusFlagsException();
+            }
             $flagsToDelete->delete();
+            $successMsg = 1;
+
+        }catch (OrderStatusFlagsException $exception) {
+            $errorMsg = 1;
         }
-//             Redirect to the success URL,
-        if ('stay' !== $request->get('save_mode')) {
-            $url = '/admin/configuration/order-status';
-        }
-        return $this->generateRedirect($url);
+
+        return $this->generateRedirect(URL::getInstance()->absoluteUrl('admin/configuration/order-status', ['errorMsg' => $errorMsg, 'successMsg' => $successMsg]));
     }
 }

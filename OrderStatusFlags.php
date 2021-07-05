@@ -11,6 +11,8 @@ class OrderStatusFlags extends BaseModule
 {
     /** @var string */
     const DOMAIN_NAME = 'orderstatusflags';
+    const ERROR_MESSAGE = "This status is protected. You can not delete it.";
+    const SUCCESS_MESSAGE = "Flags updated";
 
     /*
      * You may now override BaseModuleInterface methods, such as:

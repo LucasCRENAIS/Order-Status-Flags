@@ -12,11 +12,8 @@
 
 namespace OrderStatusFlags\Hook;
 
-use OrderStatusFlags\Loop\OrderStatusFlagsLoop;
-use OrderStatusFlags\Model\FlagsQuery;
-use OrderStatusFlags\Model\OrderStatusFlagsQuery;
+use OrderStatusFlags\Exception\OrderStatusFlagsException;
 use OrderStatusFlags\OrderStatusFlags;
-use Propel\Runtime\ActiveQuery\Criteria;
 use Thelia\Core\Event\Hook\HookRenderEvent;
 use Thelia\Core\Hook\BaseHook;
 use Thelia\Model\ModuleConfig;
@@ -24,24 +21,21 @@ use Thelia\Model\ModuleConfigQuery;
 
 class OrderStatusFlagsHook extends BaseHook
 {
-    public function orderStatusFlagsBottom(HookRenderEvent $event)
-    {
-        $event->add(
-            $this->render(
-                'order-status-flags-module.html'
-            )
-        );
-    }
-
     public function orderStatusFlagsConfig(HookRenderEvent $event)
     {
+
         if (null !== $params = ModuleConfigQuery::create()->findByModuleId(OrderStatusFlags::getModuleId())) {
-            /** @var ModuleConfig $param */
-            foreach ($params as $param) {
-                $vars[$param->getName()] = $param->getValue();
-            }
+
+                /** @var ModuleConfig $param */
+                foreach ($params as $param) {
+                    $vars[$param->getName()] = $param->getValue();
+                }
+
+            $event->add(
+                $this->render(
+                    'order-status-flags-configuration.html')
+            );
         }
-        $event->add($this->render('order-status-flags-configuration.html'));
     }
 
     public function orderStatusFlagsConfigJs(HookRenderEvent $event)
